@@ -1,1 +1,1 @@
-# django-compsender
+# django.apps
