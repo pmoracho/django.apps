@@ -1,0 +1,6 @@
+/venv
+apps/documents/
+apps/db.sqlite3
+apps/compsender/migrations/__pycache__/
+apps/apps/__pycache__/
+apps/compsender/__pycache__/
