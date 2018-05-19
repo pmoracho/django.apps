@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-
 class Proyecto(models.Model):
 
 	nombre = models.CharField(max_length=30, blank=False)
@@ -44,7 +43,8 @@ class Sistema(models.Model):
 class Aplicacion(models.Model):
 
 	sistema = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)	
-	nombre = models.CharField(max_length=30, blank=False)
+	nombre = models.CharField(max_length=255, blank=False)
+	atajo = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return self.nombre
@@ -58,6 +58,7 @@ class Modulo(models.Model):
 
 	aplicacion = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, null=True)	
 	nombre = models.CharField(max_length=30, blank=False)
+	grupo = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return self.nombre
@@ -78,19 +79,65 @@ class TipoFuncionalidad(models.Model):
 		verbose_name = "Tipo de funcionalidad"
 		verbose_name_plural = "Tipos de funcionalidades"
 
+class TipoEntidad(models.Model):
+
+	nombre = models.CharField(max_length=15, blank=False)
+
+	def __str__(self):
+		return self.nombre
+
+	class Meta:
+		verbose_name = "Tipo de entidad"
+		verbose_name_plural = "Tipo de entidades"
+
+class Entidad(models.Model):
+
+	origen = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)	
+	tipo = models.ForeignKey(TipoEntidad, on_delete=models.SET_NULL, null=True)
+	nombre = models.CharField(max_length=255, blank=False)
+
+	def __str__(self):
+		return "{0}.{1}".format(self.origen,self.nombre)
+
+	class Meta:
+		verbose_name = "Entidad"
+		verbose_name_plural = "Entidades"
+
 
 class Funcionalidad(models.Model):
 
 	modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE, null=True)	
 	codigo = models.CharField(max_length=30, blank=False)
-	tipo_funcionalidad = models.ForeignKey(TipoFuncionalidad, on_delete=models.SET_NULL, null=True)
+	tipo = models.ForeignKey(TipoFuncionalidad, on_delete=models.SET_NULL, null=True)
 	descripcion = models.CharField(max_length=255, blank=False)
 	observacion = models.CharField(max_length=1000, blank=True)
+	entrada_usuario = models.CharField(max_length=255, blank=True)
+	salida_usuario = models.CharField(max_length=255, blank=True)
+	entidades = models.ManyToManyField(Entidad, through='FuncionalidadEntidad')
 
 	def __str__(self):
 		return self.codigo 
 
+	def get_all(self):
+		return 
+
 	class Meta:
 		verbose_name = "Funcionalidad"
 		verbose_name_plural = "Funcionalidades"
+
+
+class FuncionalidadEntidad(models.Model):
+
+	entidad = models.ForeignKey(Entidad, on_delete=models.CASCADE, null=True)	
+	funcionalidad = models.ForeignKey(Funcionalidad, on_delete=models.CASCADE, null=True)	
+	modo = models.ForeignKey(TipoFuncionalidad, on_delete=models.SET_NULL, null=True)
+	observacion = models.CharField(max_length=1000, blank=True)
+
+	def __str__(self):
+		return "{0}.{1}".format(self.funcionalidad,self.entidad)
+
+	class Meta:
+		verbose_name = "Entidad por funcionalidad"
+		verbose_name_plural = "Entidades por funcionalidad"
+
 
