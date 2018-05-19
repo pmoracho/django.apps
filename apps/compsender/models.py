@@ -38,22 +38,63 @@ class Comprobante(models.Model):
 		errors = []
 
 		########################################################################################
+		# Documento
+		########################################################################################
+		if not self.document:
+			errors.append(_('El documento es obligatorio'))
+
+		########################################################################################
+		# Tipo de comprobante
+		########################################################################################
+		if self.tipo_comprobante is None:
+			errors.append(_('El tipo de comprobante es obligatorio'))
+
+		########################################################################################
 		# Punto de venta
 		########################################################################################
-		if not self.punto_venta:
+		if self.punto_venta is None:
 			errors.append(_('El punto de venta es obligatorio'))
-		if self.punto_venta <1 or self.punto_venta > 9999:
+		elif self.punto_venta <1 or self.punto_venta > 9999:
 			errors.append(_('El punto de venta debe debe ser un valor entre 1 y 9999'))
 
 		########################################################################################
 		# número de comprobante
 		########################################################################################
-		if not self.numero_comprobante:
-			errors.append(_('El punto de venta es obligatorio'))
-		if self.numero_comprobante < 1 or self.numero_comprobante > 9999:
+		if self.numero_comprobante is None:
+			errors.append(_('El número de comprobante es obligatorio'))
+		elif self.numero_comprobante < 1 or self.numero_comprobante > 9999:
 			errors.append(_('El número de comprobante debe debe ser un valor entre 1 y 99.999.999'))
+
+		########################################################################################
+		# Cuit del emisor
+		########################################################################################
+		if self.cuit_emisor is None:
+			errors.append(_('El número de CUIT del emisor es obligatorio'))
+		elif not validar_cuit(self.cuit_emisor):
+			errors.append(_('El número de CUIT es inválido'))
 
 		if errors:
 			raise ValidationError(errors)
 
+def validar_cuit(cuit):
 
+	if	len(cuit) != 11 and (len(cuit) != 11 or cuit[2] != "-" or cuit[11] != "-"):
+		return False
+
+	base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+
+	cuit = cuit.replace("-", "") # remuevo las barras
+
+	# calculo el digito verificador:
+	aux = 0
+	for i in range(10):
+		aux += int(cuit[i]) * base[i]
+
+	aux = 11 - (aux - (int(aux / 11) * 11))
+
+	if aux == 11:
+		aux = 0
+	if aux == 10:
+		aux = 9
+
+	return aux == int(cuit[10])

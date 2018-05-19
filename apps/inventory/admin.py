@@ -3,6 +3,7 @@ from django.forms import TextInput, Textarea, ChoiceField
 from django.db import models
 from django import forms
 from django.contrib.admin import SimpleListFilter
+from suit_ckeditor.widgets import CKEditorWidget
 
 from .models import Area
 from .models import Proyecto
@@ -39,9 +40,9 @@ class FuncionalidadResource(resources.ModelResource):
 
 	class Meta:
 		model = Funcionalidad
-		fields = (	'modulo__aplicacion__sistema__area__nombre', 
-					'modulo__aplicacion__sistema__nombre', 
-					'modulo__aplicacion__nombre', 
+		fields = (	'modulo__aplicacion__sistema__area__nombre',
+					'modulo__aplicacion__sistema__nombre',
+					'modulo__aplicacion__nombre',
 					'modulo__nombre',
 					'codigo',
 					'descripcion',
@@ -60,8 +61,14 @@ def duplicate_event(modeladmin, request, queryset):
 duplicate_event.short_description = "Duplicar el/los registros seleccionados"
 
 class FuncionalidadModelForm( forms.ModelForm ):
+
 	descripcion = forms.CharField( widget=forms.Textarea )
 	observacion = forms.CharField( widget=forms.Textarea )
+
+	class Meta:
+		widgets = {
+			'name': CKEditorWidget(editor_options={'startupFocus': True})
+		}
 
 class FuncionalidadGeneral(admin.TabularInline):
 	model = Funcionalidad
@@ -83,7 +90,7 @@ class EntidadFilter(SimpleListFilter):
 		return [(e.id, e.nombre) for e in Entidad.objects.all()]
 
 	def queryset(self, request, queryset):
-		
+
 		if self.value():
 			return Funcionalidad.objects.filter(funcionalidadentidad__entidad__id = self.value())
 		else:
@@ -105,13 +112,19 @@ class FuncionalidadAdmin(ImportExportActionModelAdmin):
 
 	fieldsets = [
 		(None, {
-			'classes': ('suit-tab', 'suit-tab-general',),   
-			'fields': ['modulo', 'codigo', 'tipo', 'descripcion', 'observacion','entrada_usuario', 'salida_usuario']
-		}),          
+	 			'classes': ('suit-tab', 'suit-tab-general', ),
+				'fields': ['modulo', 'codigo', 'tipo', 'observacion','entrada_usuario', 'salida_usuario']
+				}
+		),
+		('Descripción', {
+	 			'classes': ('full-width',),
+				'fields': ('descripcion',)
+				}
+		),
 	]
 	suit_form_tabs = (
-	 					('general', 'General'),
-	 					('entidades', 'Entidades')
+					('general', 'General'),
+					('entidades', 'Entidades')
 	)
 
 	def grupo(self, obj):

@@ -16,7 +16,7 @@ class Proyecto(models.Model):
 
 class Area(models.Model):
 
-	proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)	
+	proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)
 	nombre = models.CharField(max_length=30, blank=False)
 
 	def __str__(self):
@@ -29,7 +29,7 @@ class Area(models.Model):
 
 class Sistema(models.Model):
 
-	area = models.ForeignKey(Area, on_delete=models.CASCADE, null=True)	
+	area = models.ForeignKey(Area, on_delete=models.CASCADE, null=True)
 	nombre = models.CharField(max_length=30, blank=False)
 
 	def __str__(self):
@@ -42,9 +42,10 @@ class Sistema(models.Model):
 
 class Aplicacion(models.Model):
 
-	sistema = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)	
+	sistema = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)
 	nombre = models.CharField(max_length=255, blank=False)
 	atajo = models.CharField(max_length=255, blank=True)
+	grupo = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return self.nombre
@@ -56,9 +57,8 @@ class Aplicacion(models.Model):
 
 class Modulo(models.Model):
 
-	aplicacion = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, null=True)	
+	aplicacion = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, null=True)
 	nombre = models.CharField(max_length=30, blank=False)
-	grupo = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return self.nombre
@@ -92,7 +92,7 @@ class TipoEntidad(models.Model):
 
 class Entidad(models.Model):
 
-	origen = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)	
+	origen = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)
 	tipo = models.ForeignKey(TipoEntidad, on_delete=models.SET_NULL, null=True)
 	nombre = models.CharField(max_length=255, blank=False)
 
@@ -106,7 +106,7 @@ class Entidad(models.Model):
 
 class Funcionalidad(models.Model):
 
-	modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE, null=True)	
+	modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE, null=True)
 	codigo = models.CharField(max_length=30, blank=False)
 	tipo = models.ForeignKey(TipoFuncionalidad, on_delete=models.SET_NULL, null=True)
 	descripcion = models.CharField(max_length=255, blank=False)
@@ -116,10 +116,10 @@ class Funcionalidad(models.Model):
 	entidades = models.ManyToManyField(Entidad, through='FuncionalidadEntidad')
 
 	def __str__(self):
-		return self.codigo 
+		return self.codigo
 
 	def get_all(self):
-		return 
+		return
 
 	class Meta:
 		verbose_name = "Funcionalidad"
@@ -128,8 +128,8 @@ class Funcionalidad(models.Model):
 
 class FuncionalidadEntidad(models.Model):
 
-	entidad = models.ForeignKey(Entidad, on_delete=models.CASCADE, null=True)	
-	funcionalidad = models.ForeignKey(Funcionalidad, on_delete=models.CASCADE, null=True)	
+	entidad = models.ForeignKey(Entidad, on_delete=models.CASCADE, null=True)
+	funcionalidad = models.ForeignKey(Funcionalidad, on_delete=models.CASCADE, null=True)
 	modo = models.ForeignKey(TipoFuncionalidad, on_delete=models.SET_NULL, null=True)
 	observacion = models.CharField(max_length=1000, blank=True)
 
