@@ -3,7 +3,6 @@ from django.forms import TextInput, Textarea, ChoiceField
 from django.db import models
 from django import forms
 from django.contrib.admin import SimpleListFilter
-from suit_ckeditor.widgets import CKEditorWidget
 
 from .models import Area
 from .models import Proyecto
@@ -64,10 +63,10 @@ class FuncionalidadModelForm( forms.ModelForm ):
 
 	descripcion = forms.CharField( widget=forms.Textarea )
 	observacion = forms.CharField( widget=forms.Textarea )
-
 	class Meta:
 		widgets = {
-			'name': CKEditorWidget(editor_options={'startupFocus': True})
+			'descripcion': Textarea(attrs={'cols': 180, 'rows': 20}),
+			'observacion': Textarea(attrs={'cols': 180, 'rows': 20}),
 		}
 
 class FuncionalidadGeneral(admin.TabularInline):
@@ -113,12 +112,7 @@ class FuncionalidadAdmin(ImportExportActionModelAdmin):
 	fieldsets = [
 		(None, {
 	 			'classes': ('suit-tab', 'suit-tab-general', ),
-				'fields': ['modulo', 'codigo', 'tipo', 'observacion','entrada_usuario', 'salida_usuario']
-				}
-		),
-		('Descripción', {
-	 			'classes': ('full-width',),
-				'fields': ('descripcion',)
+				'fields': ['modulo', 'codigo', 'tipo', 'descripcion', 'observacion','entrada_usuario', 'salida_usuario']
 				}
 		),
 	]
@@ -142,13 +136,21 @@ class FuncionalidadAdmin(ImportExportActionModelAdmin):
 	def proyecto(self, obj):
 		return obj.modulo.aplicacion.sistema.area.proyecto
 
-	# def entidades(self, obj):
-	# 	return obj.
+	# def save_model(self, request, obj, form, change):
+	# 	# Django always sends this when "Save as new is clicked"
+	# 	if '_saveasnew' in request.POST:
+	# 		# Get the ID from the admin URL
+	# 		original_pk = resolve(request.path).args[0]
+	# 		# Get the original object
+	# 		original_obj = obj._meta.concrete_model.objects.get(id=original_pk)
 
-	class Meta:
-		widgets = {
-			'observacion': Textarea(attrs={'cols': 80, 'rows': 20}),
-		}
+	# 		# Iterate through all it's properties
+	# 		for prop, value in vars(original_obj).iteritems():
+	# 			# if the property is an Image (don't forget to import ImageFieldFile!)
+	# 			if isinstance(getattr(original_obj, prop), FieldFile):
+	# 				setattr(obj,prop,getattr(original_obj, prop)) # Copy it!
+	# 	obj.save()
+
 
 admin.site.register(Funcionalidad, FuncionalidadAdmin)
 admin.site.register(Entidad, EntidadAdmin)

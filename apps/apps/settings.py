@@ -32,8 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 	'suit',
-	'suit_ckeditor',
-	# 'jet',
 	# 'compsender.apps.CompsenderConfig',
 	'inventory.apps.InventoryConfig',
 	'import_export',
@@ -158,8 +156,3 @@ SUIT_CONFIG = {
     # 'LIST_PER_PAGE': 15
 }
 
-CKEDITOR_CONFIGS = {
-    'awesome_ckeditor': {
-        'toolbar': 'Basic',
-    },
-}
