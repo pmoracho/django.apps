@@ -46,6 +46,7 @@ class Aplicacion(models.Model):
 	nombre = models.CharField(max_length=255, blank=False)
 	atajo = models.CharField(max_length=255, blank=True)
 	grupo = models.CharField(max_length=255, blank=True)
+	descripcion = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return self.nombre
@@ -59,6 +60,7 @@ class Modulo(models.Model):
 
 	aplicacion = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, null=True)
 	nombre = models.CharField(max_length=30, blank=False)
+	descripcion = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return self.nombre
@@ -70,7 +72,8 @@ class Modulo(models.Model):
 
 class TipoFuncionalidad(models.Model):
 
-	nombre = models.CharField(max_length=15, blank=False)
+	nombre = models.CharField(max_length=255, blank=False)
+	nombre_corto = models.CharField(max_length=15, blank=False)
 
 	def __str__(self):
 		return self.nombre
@@ -134,7 +137,7 @@ class FuncionalidadEntidad(models.Model):
 	observacion = models.CharField(max_length=1000, blank=True)
 
 	def __str__(self):
-		return "{0}.{1}".format(self.funcionalidad,self.entidad)
+		return "{0}.{1}.{2}".format(self.funcionalidad,self.entidad, self.modo)
 
 	class Meta:
 		verbose_name = "Entidad por funcionalidad"

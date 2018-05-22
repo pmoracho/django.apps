@@ -34,7 +34,6 @@ INSTALLED_APPS = [
 	'suit',
 	# 'compsender.apps.CompsenderConfig',
 	'inventory.apps.InventoryConfig',
-	'import_export',
 	'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
