@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-23 17:09-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\compsender\models.py:44
+msgid "El documento es obligatorio"
+msgstr ""
+
+#: .\compsender\models.py:50
+msgid "El tipo de comprobante es obligatorio"
+msgstr ""
+
+#: .\compsender\models.py:56
+msgid "El punto de venta es obligatorio"
+msgstr ""
+
+#: .\compsender\models.py:58
+msgid "El punto de venta debe debe ser un valor entre 1 y 9999"
+msgstr ""
+
+#: .\compsender\models.py:64
+msgid "El número de comprobante es obligatorio"
+msgstr ""
+
+#: .\compsender\models.py:66
+msgid "El número de comprobante debe debe ser un valor entre 1 y 99.999.999"
+msgstr ""
+
+#: .\compsender\models.py:72
+msgid "El número de CUIT del emisor es obligatorio"
+msgstr ""
+
+#: .\compsender\models.py:74
+msgid "El número de CUIT es inválido"
+msgstr ""
+
+#: .\inventory\models.py:150
+msgid "Can add user"
+msgstr "Puede agregar un usuario"

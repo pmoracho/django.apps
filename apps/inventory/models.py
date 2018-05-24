@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 class Proyecto(models.Model):
 
@@ -59,16 +59,15 @@ class Aplicacion(models.Model):
 class Modulo(models.Model):
 
 	aplicacion = models.ForeignKey(Aplicacion, on_delete=models.CASCADE, null=True)
-	nombre = models.CharField(max_length=30, blank=False)
+	codigo = models.CharField(max_length=30, blank=False)
 	descripcion = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
-		return self.nombre
+		return self.codigo
 
 	class Meta:
 		verbose_name = "Modulo"
 		verbose_name_plural = "Modulos"
-
 
 class TipoFuncionalidad(models.Model):
 
@@ -98,6 +97,7 @@ class Entidad(models.Model):
 	origen = models.ForeignKey(Sistema, on_delete=models.CASCADE, null=True)
 	tipo = models.ForeignKey(TipoEntidad, on_delete=models.SET_NULL, null=True)
 	nombre = models.CharField(max_length=255, blank=False)
+	descripcion = models.CharField(max_length=255, blank=True)
 
 	def __str__(self):
 		return "{0}.{1}".format(self.origen,self.nombre)
@@ -144,3 +144,9 @@ class FuncionalidadEntidad(models.Model):
 		verbose_name_plural = "Entidades por funcionalidad"
 
 
+class UserGroup(models.Model):
+    class Meta:
+        permissions = (
+            ('can_view_lizard_data', _('Can add user')),
+            #                       ^^^ note the _() translation marker.
+            )

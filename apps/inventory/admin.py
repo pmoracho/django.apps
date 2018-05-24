@@ -24,19 +24,45 @@ admin.site.site_header = "Apps Inventory ";
 admin.site.site_title = "Apps Inventory ";
 
 admin.site.register(Proyecto)
-admin.site.register(Sistema)
 admin.site.register(TipoFuncionalidad)
 admin.site.register(TipoEntidad)
+
+def duplicate_event(modeladmin, request, queryset):
+	for object in queryset:
+		object.id = None
+		object.save()
+
+duplicate_event.short_description = "Duplicar el/los registros seleccionados"
+
+################################################################################
+# FORM: Sistema
+################################################################################
+class SistemaAdmin(admin.ModelAdmin):
+	list_display  = ('area_nombre',  'id',)
+	search_fields = ('area__nombre', 'nombre',)
+	list_filter   = ('area', 'nombre', )
+	save_as       = True
+	actions       = [duplicate_event]
+
+	def area_nombre(self, obj):
+		return "{0} - {1}".format(obj.area.nombre, obj.nombre)
+
+	area_nombre.allow_tags = True
+	area_nombre.short_description = 'Area / Sistema'
+	area_nombre.admin_order_field = 'area'
+
+admin.site.register(Sistema, SistemaAdmin)
 
 
 ################################################################################
 # FORM: Aplicaciones
 ################################################################################
 class AplicacionAdmin(admin.ModelAdmin):
-	list_display  = ('sistema_nombre', 'grupo', 'descripcion',)
+	list_display  = ('sistema_nombre', 'grupo', 'descripcion', 'id',)
 	search_fields = ('sistema__nombre', 'nombre', 'grupo', 'descripcion',)
 	list_filter   = ('sistema', 'nombre', 'grupo',)
 	save_as       = True
+	actions       = [duplicate_event]
 
 	def sistema_nombre(self, obj):
 		return "{0} - {1}".format(obj.sistema.nombre, obj.nombre)
@@ -51,23 +77,45 @@ admin.site.register(Aplicacion, AplicacionAdmin)
 # FORM: Area
 ################################################################################
 class AreaAdmin(admin.ModelAdmin):
-	list_display  = ('proyecto', 'nombre', 'id')
+	list_display  = ('proyecto_nombre', 'id',)
+	search_fields = ('proyecto', 'nombre',)
+	list_filter   = ('proyecto', 'nombre',)
+	actions       = [duplicate_event]
+	save_as       = True
+
+	def proyecto_nombre(self, obj):
+		return "{0} - {1}".format(obj.proyecto.nombre, obj.nombre)
+
+	proyecto_nombre.allow_tags = True
+	proyecto_nombre.short_description = 'Proyecto / Nombre'
+	proyecto_nombre.admin_order_field = 'proyecto'
 
 
 admin.site.register(Area, AreaAdmin)
 
+################################################################################
+# FORM: Modulo
+################################################################################
+class ModuloAdmin(admin.ModelAdmin):
+	list_display  = ('aplicacion_modulo', 'descripcion', 'id')
+	list_filter   = ('aplicacion__nombre', 'codigo',)
+	search_fields = ('aplicacion__nombre', 'codigo')
+	actions       = [duplicate_event]
+	save_as       = True
 
+	def aplicacion_modulo(self, obj):
+		return "{0} - {1}".format(obj.aplicacion.nombre, obj.codigo)
+
+admin.site.register(Modulo, ModuloAdmin)
+
+
+################################################################################
+# FORM: Funcionalidad
+################################################################################
 class FuncionalidadEntidadInline(admin.TabularInline):
 	model = Funcionalidad.entidades.through
 	suit_classes = 'suit-tab suit-tab-entidades'
 	extra = 1
-
-def duplicate_event(modeladmin, request, queryset):
-	for object in queryset:
-		object.id = None
-		object.save()
-
-duplicate_event.short_description = "Duplicar el/los registros seleccionados"
 
 class FuncionalidadModelForm( forms.ModelForm ):
 
@@ -85,9 +133,9 @@ class FuncionalidadGeneral(admin.TabularInline):
 
 class EntidadAdmin(admin.ModelAdmin):
 
-	search_fields = ['origen', 'tipo', 'nombre']
+	search_fields = ['origen__nombre', 'tipo__nombre', 'nombre']
 	list_display = ('origen_nombre', 'tipo', 'id',)
-	list_filter = ('origen', 'tipo', 'nombre',)
+	list_filter = ('origen__nombre', 'tipo', 'nombre',)
 	save_as       = True
 
 	def origen_nombre(self, obj):
@@ -163,7 +211,7 @@ def funcionalidades_generate_xlsx(modeladmin, request, queryset):
 		worksheet.write(row, 1, funcionalidad.modulo.aplicacion.sistema.nombre, fmtcell)
 		worksheet.write(row, 2, funcionalidad.modulo.aplicacion.atajo, fmtcell)
 		worksheet.write(row, 3, funcionalidad.modulo.aplicacion.nombre, fmtcell)
-		worksheet.write(row, 4, funcionalidad.modulo.nombre, fmtcell)
+		worksheet.write(row, 4, funcionalidad.modulo.codigo, fmtcell)
 		worksheet.write(row, 5, funcionalidad.codigo, fmtcell)
 		worksheet.write(row, 6, funcionalidad.descripcion, fmtcell)
 		worksheet.write(row, 7, funcionalidad.entrada_usuario, fmtcell)
@@ -191,19 +239,6 @@ def funcionalidades_generate_xlsx(modeladmin, request, queryset):
 
 funcionalidades_generate_xlsx.short_description = u"Generar planilla de funcionalidades"
 
-################################################################################
-# FORM: Modulo
-################################################################################
-class ModuloAdmin(admin.ModelAdmin):
-	list_display  = ('aplicacion_modulo', 'descripcion', 'id')
-	list_filter   = ('aplicacion__nombre', 'nombre',)
-	search_fields = ('aplicacion__nombre', 'nombre')
-	save_as       = True
-
-	def aplicacion_modulo(self, obj):
-		return "{0} - {1}".format(obj.aplicacion.nombre, obj.nombre)
-
-admin.site.register(Modulo, ModuloAdmin)
 
 
 
@@ -220,7 +255,7 @@ admin.site.register(Modulo, ModuloAdmin)
 class FuncionalidadAdmin(admin.ModelAdmin):
 
 	form          = FuncionalidadModelForm
-	search_fields = ['modulo', 'entidad', 'codigo', 'tipo', 'descripcion', 'observacion', 'aplicacion']
+	search_fields = ['modulo__codigo', 'codigo', 'tipo__nombre', 'descripcion', 'observacion', 'modulo__aplicacion__nombre']
 	list_filter   = ('modulo__aplicacion__sistema__area', 'modulo__aplicacion__sistema','modulo__aplicacion', 'modulo','codigo','tipo', 'descripcion', EntidadFilter, )
 	list_display  = ('modulo_codigo', 'descripcion', 'grupo', 'proyecto', 'area', 'sistema', 'aplicacion', 'tipo', 'id')
 
@@ -241,7 +276,7 @@ class FuncionalidadAdmin(admin.ModelAdmin):
 	)
 
 	def modulo_codigo(self, obj):
-		return "{0} - {1}".format(obj.modulo.nombre, obj.codigo)
+		return "{0} - {1}".format(obj.modulo.codigo, obj.codigo)
 
 	modulo_codigo.allow_tags = True
 	modulo_codigo.short_description = 'Módulo/Código'
@@ -262,6 +297,6 @@ class FuncionalidadAdmin(admin.ModelAdmin):
 	def proyecto(self, obj):
 		return obj.modulo.aplicacion.sistema.area.proyecto
 
-
 admin.site.register(Funcionalidad, FuncionalidadAdmin)
 admin.site.register(Entidad, EntidadAdmin)
+
