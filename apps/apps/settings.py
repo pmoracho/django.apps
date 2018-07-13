@@ -155,6 +155,7 @@ SUIT_CONFIG = {
     # 'LIST_PER_PAGE': 15
 }
 
+"""
 if DEBUG:
     INTERNAL_IPS = ('127.0.0.1',)
     MIDDLEWARE += (
@@ -183,3 +184,4 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
     }
+"""	
